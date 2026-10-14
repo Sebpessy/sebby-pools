@@ -2,11 +2,13 @@
 //   POST /sebby-pools/contact  website lead form -> email to Seb (+ auto-reply to the customer)
 //   GET  /sebby-pools/domain   adds sebbypools.com to Resend if missing, re-checks verification,
 //                              and returns the DNS records still needed (public info only)
-// Secrets: RESEND_API_KEY (required), LEAD_TO (optional, defaults to seb@sebby.homes)
+// Secrets: RESEND_API_KEY (required), LEAD_TO (optional, defaults to sebpessy@gmail.com)
+// seb@sebbypools.com is an alias forwarded into sebpessy@gmail.com (ImprovMX); Gmail sends as it via Resend SMTP.
 
 const DOMAIN = 'sebbypools.com';
 const FROM = 'Sebby Pools <seb@sebbypools.com>';
-const LEAD_TO = Deno.env.get('LEAD_TO') || 'seb@sebby.homes';
+const LEAD_TO = Deno.env.get('LEAD_TO') || 'sebpessy@gmail.com';
+const REPLY_TO = 'seb@sebbypools.com';
 const PHONE = '469-996-3789';
 const ORIGINS = ['https://sebbypools.com', 'https://www.sebbypools.com'];
 
@@ -76,7 +78,7 @@ async function contact(req: Request) {
 
   const first = f.name.split(' ')[0];
   await resend('/emails', {method: 'POST', body: JSON.stringify({
-    from: FROM, to: [f.email], reply_to: LEAD_TO,
+    from: FROM, to: [f.email], reply_to: REPLY_TO,
     subject: 'Thanks for reaching out to Sebby Pools',
     text: `Hi ${first},\n\nThanks for reaching out. Your message is with Seb and you will hear back within one business day.\n\nIf it's urgent, call or text ${PHONE}.\n\nSeb\nSebby Pools\nhttps://sebbypools.com`,
   })}).catch(e => console.error('auto-reply failed', e));
