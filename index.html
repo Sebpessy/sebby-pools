@@ -1038,9 +1038,9 @@ if (window.gsap && window.ScrollTrigger && !reduceMotion) {
 })();
 
 /* ---------- contact form ----------
-   API: set to the lead-intake endpoint once deployed (POST {API}/contact, JSON).
-   While empty, the form opens a pre-filled email to EMAIL instead. */
-const API = '';
+   API: lead-intake endpoint (Supabase edge function sebby-pools, sends via Resend from seb@sebbypools.com).
+   If it is empty or sending fails, the form opens a pre-filled email to EMAIL instead. */
+const API = 'https://cqjpecwifbakomyycrbw.supabase.co/functions/v1/sebby-pools';
 const EMAIL = 'seb@sebby.homes';
 const cform = document.getElementById('cform'),
       cmsg = document.getElementById('cmsg'),
@@ -1058,7 +1058,7 @@ cform.addEventListener('submit', async e => {
   const payload = {name, email, phone: val('cphone'), location: val('clocation'),
     projectType: val('ctype'), timeline: val('ctimeline'), message: val('cmessage'),
     source: 'sebbypools.com'};
-  if (!API) {
+  const openMail = () => {
     const body = ['Name: ' + name, 'Email: ' + email, 'Phone: ' + payload.phone,
       'Neighborhood: ' + payload.location, 'Project: ' + payload.projectType,
       'Timeline: ' + payload.timeline, '', payload.message].join('\n');
@@ -1066,8 +1066,8 @@ cform.addEventListener('submit', async e => {
       '&body=' + encodeURIComponent(body);
     cmsg.className = 'cmsg ok';
     cmsg.textContent = 'Your email app should open with your details filled in. Just press send. Or call 469-996-3789.';
-    return;
-  }
+  };
+  if (!API) return openMail();
   csubmit.disabled = true;
   try {
     const r = await fetch(API + '/contact', {method: 'POST',
@@ -1082,8 +1082,7 @@ cform.addEventListener('submit', async e => {
       cmsg.textContent = 'We already have a message from you. Give us a few minutes, or call 469-996-3789.';
     } else { throw new Error(j.error || 'failed'); }
   } catch (err) {
-    cmsg.className = 'cmsg err';
-    cmsg.textContent = 'Something went wrong sending your message. Please try again, or email ' + EMAIL + '.';
+    openMail();
   }
   csubmit.disabled = false;
 });
