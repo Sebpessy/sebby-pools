@@ -1038,9 +1038,9 @@ if (window.gsap && window.ScrollTrigger && !reduceMotion) {
 })();
 
 /* ---------- contact form ----------
-   API: set to the lead-intake endpoint once deployed (POST {API}/contact, JSON).
-   While empty, the form opens a pre-filled email to EMAIL instead. */
-const API = '';
+   API: Supabase edge function `sebby-pools` (saves the lead to the CRM, then emails Seb).
+   If API is ever emptied, the form falls back to a pre-filled email to EMAIL. */
+const API = 'https://cqjpecwifbakomyycrbw.supabase.co/functions/v1/sebby-pools';
 const EMAIL = 'seb@sebby.homes';
 const cform = document.getElementById('cform'),
       cmsg = document.getElementById('cmsg'),
