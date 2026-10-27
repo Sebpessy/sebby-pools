@@ -2,6 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- ChatGPT Ads Measurement Pixel (data source sebbypools.com) -->
+<script>
+  (function (w, d, s, u) {
+    if (w.oaiq) return;
+    var q = function () { q.q.push(arguments); };
+    q.q = [];
+    w.oaiq = q;
+    var js = d.createElement(s);
+    js.async = true;
+    js.src = u;
+    var f = d.getElementsByTagName(s)[0];
+    f.parentNode.insertBefore(js, f);
+  })(window, document, "script", "https://bzrcdn.openai.com/sdk/oaiq.min.js");
+  oaiq("init", { pixelId: "KAX1fQbAeUasyP81AaKgeh" });
+  // one page_viewed per load, so an ad click shows in Ads Manager even when the visitor never calls or writes
+  oaiq("measure", "page_viewed", { type: "contents" });
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sebby Pools · Custom Luxury Pools · Dallas–Fort Worth</title>
 <meta name="description" content="Sebby Pools designs and builds custom luxury pools and outdoor living across Dallas–Fort Worth, from the team behind Sebby Homes.">
@@ -1045,6 +1062,22 @@ const EMAIL = 'seb@sebby.homes';
 const cform = document.getElementById('cform'),
       cmsg = document.getElementById('cmsg'),
       csubmit = document.getElementById('csubmit');
+const qs = new URLSearchParams(location.search);
+// The edge function stores no source field, so an ad lead says where it came from in its message.
+const cameFrom = [qs.get('utm_source'), qs.get('utm_campaign'), qs.get('utm_content')].filter(Boolean).join(' / ');
+const sha256 = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))]
+  .map(b => b.toString(16).padStart(2, '0')).join('');
+const measureLead = async (email, phone) => {
+  if (!window.oaiq) return;
+  let digits = phone.replace(/\D/g, '').replace(/^0+/, '');
+  if (digits.length === 10) digits = '1' + digits;
+  const user = {country: 'US'};
+  if (email) user.email_sha256 = await sha256(email.trim().toLowerCase());
+  if (digits) user.phone_number_sha256 = await sha256(digits);
+  const id = 'lead_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
+  oaiq('init', {user});
+  oaiq('measure', 'lead_created', {type: 'customer_action'}, {event_id: id});
+};
 cform.addEventListener('submit', async e => {
   e.preventDefault();
   const val = id => document.getElementById(id).value.trim();
@@ -1056,7 +1089,8 @@ cform.addEventListener('submit', async e => {
   }
   if (val('cwebsite')) return; /* honeypot */
   const payload = {name, email, phone: val('cphone'), location: val('clocation'),
-    projectType: val('ctype'), timeline: val('ctimeline'), message: val('cmessage'),
+    projectType: val('ctype'), timeline: val('ctimeline'),
+    message: [cameFrom && 'Came from: ' + cameFrom, val('cmessage')].filter(Boolean).join('\n\n'),
     source: 'sebbypools.com'};
   if (!API) {
     const body = ['Name: ' + name, 'Email: ' + email, 'Phone: ' + payload.phone,
@@ -1074,6 +1108,7 @@ cform.addEventListener('submit', async e => {
       headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
     const j = await r.json();
     if (j.ok) {
+      measureLead(email, payload.phone).catch(() => {});
       cform.style.display = 'none';
       cmsg.className = 'cmsg ok';
       cmsg.textContent = 'Thank you, ' + name.split(' ')[0] + '. Your message is with Seb. You will hear back within one business day.';
@@ -1086,6 +1121,17 @@ cform.addEventListener('submit', async e => {
     cmsg.textContent = 'Something went wrong sending your message. Please try again, or email ' + EMAIL + '.';
   }
   csubmit.disabled = false;
+});
+</script>
+<script>
+/* ---------- phone tap: a tap on any tel: link counts once per visit. Ads Manager only builds conversions
+   on standard events, so it is sent as appointment_scheduled and reported there as the "Phone tap" conversion. ---------- */
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href^="tel:"]');
+  if (!a || !window.oaiq) return;
+  try { if (sessionStorage.getItem('sp_phone_tap')) return; sessionStorage.setItem('sp_phone_tap', '1'); } catch (err) {}
+  const id = 'tap_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
+  oaiq('measure', 'appointment_scheduled', {type: 'customer_action'}, {event_id: id});
 });
 </script>
 </body>
