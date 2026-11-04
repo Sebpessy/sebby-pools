@@ -357,6 +357,18 @@ nav .links a.cta:hover{background:var(--gold);color:var(--black)}
 .cform .csub{font-size:.85rem;color:var(--muted-dim);margin-top:10px;line-height:1.6;max-width:470px}
 .cform form{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
 .cform .full{grid-column:1/-1}
+.cform .cstep{grid-column:1/-1}
+.cform .cstep[hidden],.cform .cpick{display:none}
+.cform .cstepno{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-dim)}
+.cform .cq{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.55rem;line-height:1.2;color:var(--white);margin:8px 0 18px}
+.cform .cchips{display:grid;gap:10px}
+.cform .cchip{background:#0B0B0B;border:1px solid #2c2a26;color:var(--white);padding:15px 16px;font-family:'Inter',sans-serif;font-size:.95rem;text-align:left;cursor:pointer;border-radius:0;transition:border-color .3s}
+.cform .cchip:hover,.cform .cchip.on{border-color:var(--gold)}
+.cform .cfields{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.cform .cstep .csubmit{width:100%;margin-top:20px}
+.cform .cback{background:none;border:0;padding:0;margin-top:18px;color:var(--muted-dim);font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.cform .cback:hover{color:var(--gold)}
+@media(max-width:640px){.cform .cfields{grid-template-columns:1fr}}
 .cform label{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-dim);margin-bottom:8px}
 .cform input,.cform select,.cform textarea{background:#0B0B0B;border:1px solid #2c2a26;color:var(--white);padding:13px 14px;font-family:'Inter',sans-serif;font-size:.92rem;width:100%;outline:none;border-radius:0;-webkit-appearance:none;appearance:none;transition:border-color .3s}
 .cform select{background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 19px) calc(50% + 1px),calc(100% - 13px) calc(50% + 1px);background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:38px;cursor:pointer}
@@ -926,27 +938,52 @@ footer span.gold{color:var(--gold-dim)}
     </div>
     <div class="cform rv">
       <h3>Tell us about <em>your project.</em></h3>
-      <div class="csub">A few details are enough to start. Seb reads every message
-      and replies personally, usually within one business day.</div>
+      <div class="csub">Three quick questions. Seb reads every message and replies
+      personally, usually within one business day.</div>
       <form id="cform" novalidate>
-        <div>
-          <label for="cname">Full name</label>
-          <input type="text" id="cname" name="name" autocomplete="name" required maxlength="80" placeholder="Your name">
+        <div class="cstep">
+          <div class="cstepno">1 of 3</div>
+          <div class="cq">What are you planning?</div>
+          <div class="cchips" data-for="ctype">
+            <button type="button" class="cchip">New custom pool</button>
+            <button type="button" class="cchip">Pool with a new Sebby home</button>
+            <button type="button" class="cchip">Renovation or resurface</button>
+            <button type="button" class="cchip">Pool and outdoor living</button>
+            <button type="button" class="cchip">Not sure yet</button>
+          </div>
         </div>
-        <div>
-          <label for="cemail">Email</label>
-          <input type="email" id="cemail" name="email" autocomplete="email" required maxlength="120" placeholder="you@example.com">
+        <div class="cstep" hidden>
+          <div class="cstepno">2 of 3</div>
+          <div class="cq">When would you like to start?</div>
+          <div class="cchips" data-for="ctimeline">
+            <button type="button" class="cchip">Ready to start</button>
+            <button type="button" class="cchip">Within 6 months</button>
+            <button type="button" class="cchip">6 to 12 months</button>
+            <button type="button" class="cchip">Exploring</button>
+          </div>
+          <button type="button" class="cback">Back</button>
         </div>
-        <div>
-          <label for="cphone">Phone <span style="text-transform:none;letter-spacing:.04em">(optional)</span></label>
-          <input type="tel" id="cphone" name="phone" autocomplete="tel" maxlength="40" placeholder="469-000-0000">
+        <div class="cstep" hidden>
+          <div class="cstepno">3 of 3</div>
+          <div class="cq">Where should Seb reach you?</div>
+          <div class="cfields">
+            <div class="full">
+              <label for="cname">Full name</label>
+              <input type="text" id="cname" name="name" autocomplete="name" required maxlength="80" placeholder="Your name">
+            </div>
+            <div>
+              <label for="cemail">Email</label>
+              <input type="email" id="cemail" name="email" autocomplete="email" required maxlength="120" placeholder="you@example.com">
+            </div>
+            <div>
+              <label for="cphone">Phone <span style="text-transform:none;letter-spacing:.04em">(optional)</span></label>
+              <input type="tel" id="cphone" name="phone" autocomplete="tel" maxlength="40" placeholder="469-000-0000">
+            </div>
+          </div>
+          <button class="csubmit" id="csubmit" type="submit">Start the Conversation</button>
+          <button type="button" class="cback">Back</button>
         </div>
-        <div>
-          <label for="clocation">Neighborhood <span style="text-transform:none;letter-spacing:.04em">(optional)</span></label>
-          <input type="text" id="clocation" name="location" maxlength="120" placeholder="Highland Park, Southlake, ...">
-        </div>
-        <div>
-          <label for="ctype">Project</label>
+        <div class="cpick" aria-hidden="true">
           <select id="ctype" name="projectType">
             <option>New custom pool</option>
             <option>Pool with a new Sebby home</option>
@@ -954,25 +991,19 @@ footer span.gold{color:var(--gold-dim)}
             <option>Pool and outdoor living</option>
             <option>Not sure yet</option>
           </select>
-        </div>
-        <div>
-          <label for="ctimeline">Timeline</label>
           <select id="ctimeline" name="timeline">
             <option>Ready to start</option>
             <option>Within 6 months</option>
             <option>6 to 12 months</option>
             <option>Exploring</option>
           </select>
-        </div>
-        <div class="full">
-          <label for="cmessage">The pool you have in mind</label>
-          <textarea id="cmessage" name="message" maxlength="4000" placeholder="Yard, size, style, features, anything that helps us prepare for the conversation."></textarea>
+          <input type="hidden" id="clocation" name="location" value="">
+          <input type="hidden" id="cmessage" name="message" value="">
         </div>
         <div class="hp" aria-hidden="true">
           <label for="cwebsite">Website</label>
           <input type="text" id="cwebsite" name="website" tabindex="-1" autocomplete="off">
         </div>
-        <button class="csubmit full" id="csubmit" type="submit">Start the Conversation</button>
         <div class="cfine">Prefer to talk now? Call <a href="tel:+14699963789">469-996-3789</a>
         or email <a href="mailto:seb@sebby.homes">seb@sebby.homes</a>.</div>
       </form>
@@ -1155,6 +1186,30 @@ document.addEventListener('click', e => {
   const id = 'tap_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
   oaiq('measure', 'appointment_scheduled', {type: 'customer_action'}, {event_id: id});
 });
+</script>
+<script>
+/* ---------- contact form steps: one question at a time. The chips fill the hidden selects,
+   so the submit handler reads the same ids as before. ---------- */
+(() => {
+  const steps = [...cform.querySelectorAll('.cstep')];
+  const go = n => {
+    steps.forEach((s, i) => { s.hidden = i !== n; });
+    cform.closest('.cform').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  };
+  cform.querySelectorAll('.cchips').forEach(g => g.addEventListener('click', e => {
+    const b = e.target.closest('.cchip');
+    if (!b) return;
+    document.getElementById(g.dataset.for).value = b.textContent;
+    g.querySelectorAll('.cchip').forEach(c => c.classList.toggle('on', c === b));
+    go(steps.indexOf(g.closest('.cstep')) + 1);
+  }));
+  cform.querySelectorAll('.cback').forEach(b =>
+    b.addEventListener('click', () => go(steps.indexOf(b.closest('.cstep')) - 1)));
+  document.querySelectorAll('a[data-project]').forEach(a => a.addEventListener('click', () => {
+    const chip = [...cform.querySelectorAll('[data-for="ctype"] .cchip')].find(c => c.textContent === a.dataset.project);
+    if (chip) chip.click();
+  }));
+})();
 </script>
 </body>
 </html>
